@@ -48,9 +48,13 @@ def make_command_list(file_list, hi_res_path, lo_res_path):
 		channels = check_channels(str(file), hi_res_path)
 
 		if channels == 1:
-			command_list.append("ffmpeg -i \"" + hi_res_path + str(file) + ".flac\" -write_id3v1 1 -id3v2_version 3 -dither_method modified_e_weighted -out_sample_rate 48k -b:a 160k \"" + lo_res_path + str(file) + ".mp3\"")
+			command_list.append("ffmpeg -i \"" + hi_res_path + str(file)
+								+ ".flac\" -write_id3v1 1 -id3v2_version 3 -dither_method modified_e_weighted -out_sample_rate 48k -b:a 160k \""
+								+ lo_res_path + str(file) + ".mp3\"")
 		if channels == 2:
-			command_list.append("ffmpeg -i \"" + hi_res_path + str(file) + ".flac\" -write_id3v1 1 -id3v2_version 3 -dither_method modified_e_weighted -out_sample_rate 48k -b:a 320k \"" + lo_res_path + str(file) + ".mp3\"")
+			command_list.append("ffmpeg -i \"" + hi_res_path + str(file)
+								+ ".flac\" -write_id3v1 1 -id3v2_version 3 -dither_method modified_e_weighted -out_sample_rate 48k -b:a 320k \""
+								+ lo_res_path + str(file) + ".mp3\"")
 		
 	return command_list
 
