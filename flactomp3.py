@@ -13,9 +13,16 @@
 
 import os
 import subprocess
+import pexpect
 
 def check_channels(file):
-	channels = 0
+	data = pexpect.run('ffmpeg -i ' + file)
+
+	if "stereo" in data:
+		channels = 2
+	elif "mono" in data:
+		channels = 1
+
     return channels
 
 def make_file_list(hi_res_path):
