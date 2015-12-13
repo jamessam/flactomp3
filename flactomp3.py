@@ -14,6 +14,10 @@
 import os
 import subprocess
 
+def check_channels(file):
+	channels = 0
+    return channels
+
 def make_file_list(hi_res_path):
 
 	dir1 = os.listdir(hi_res_path)
