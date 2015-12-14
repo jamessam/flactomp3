@@ -16,6 +16,7 @@ import subprocess
 import pexpect
 
 def check_channels(file, hi_res_path):
+
 	data = pexpect.run('ffmpeg -i ' + hi_res_path + file + ".flac")
 	data = str(data)
 
@@ -44,6 +45,7 @@ def make_file_list(hi_res_path):
 def make_command_list(file_list, hi_res_path, lo_res_path):
 	
 	command_list = []
+
 	for file in file_list:
 		channels = check_channels(str(file), hi_res_path)
 
@@ -69,6 +71,7 @@ def main():
 	
 	for command in command_list:
 		subprocess.call(command, shell=True)
+
 
 # This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
