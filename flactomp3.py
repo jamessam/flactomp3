@@ -13,6 +13,7 @@
 
 import os
 import pexpect
+import subprocess
 
 def check_channels(file, hi_res_path):
 	file = str(file)
@@ -69,7 +70,7 @@ def main():
 	for file in file_list:
 		print("Making mp3 for: " + file)
 		command = make_command(file, hi_res_path, lo_res_path)
-		pexpect.run(command)
+		subprocess.call(command, shell=True)
 	
 	print("Done!")
 
