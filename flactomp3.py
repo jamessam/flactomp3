@@ -12,7 +12,6 @@
 #
 
 import os
-import subprocess
 import pexpect
 
 def check_channels(file, hi_res_path):
@@ -68,12 +67,11 @@ def main():
 	file_list = make_file_list(hi_res_path)
 
 	for file in file_list:
-		print("working on: " + file)
+		print("Making mp3 for: " + file)
 		command = make_command(file, hi_res_path, lo_res_path)
 		pexpect.run(command)
 	
-#	for command in command_list:
-#		subprocess.call(command, shell=True)
+	print("Done!")
 
 if __name__ == '__main__':
   main()
