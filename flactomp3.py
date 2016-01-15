@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# FLACtoMP3.py version 1.0
+# FLACtoMP3.py
 # Author: Jim Sam
 #
 # This script turns high resolution FLAC files into mp3s for mobile devices.
