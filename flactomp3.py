@@ -77,7 +77,7 @@ def make_file_list(hi_res_path):
 	return file_list
 
 def validate_path(path):
-	result = re.match(r'^/.+/$', path)
+	result = re.match(r'(^/.+/$)|(^\w:\\$)|(^\w:\\.+\\$)', path)
 	return result
 
 def main():
