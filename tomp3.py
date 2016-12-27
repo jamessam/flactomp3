@@ -9,6 +9,7 @@
 #
 
 from linecache import getline
+from platform import system
 from subprocess import call
 
 import os
@@ -63,8 +64,16 @@ def make_file_list(hi_res_path, extension):
     return file_list
 
 def validate_path(path):
-	result = re.match(r'(^/.+/$)|(^\w:\\$)|(^\w:\\.+\\$)', path)
-	return result
+    if system() == 'Windows':
+        if re.match(r'(^\w:\\$)|(^\w:\\.+\\$)', path):
+            result = True
+
+    if os.path.exists(path):
+        result = True
+    else:
+        result = False
+
+    return result
 
 def get_extension():
     toggle = False
