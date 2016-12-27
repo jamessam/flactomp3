@@ -1,6 +1,12 @@
 from unittest import main, TestCase
-from tomp3 import validate_path
+from tomp3 import test_apps_there, validate_path
 from platform import system
+
+class SystemTests(TestCase):
+    def test_system_for_apps(self):
+        f, b = test_apps_there()
+        self.assertTrue(f)
+        self.assertTrue(b)
 
 class UnitTests(TestCase):
     def test_path_validation(self):

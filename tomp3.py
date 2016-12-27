@@ -112,6 +112,7 @@ def test_apps_there():
             output = subprocess.Popen(f_command, stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT, universal_newlines=True)
             message = output.stdout.read()
+            output.stdout.close()
             if 'ffmpeg version' in message:
                 ffmpeg = True
         except FileNotFoundError:
@@ -122,11 +123,12 @@ def test_apps_there():
             output = subprocess.Popen(b_command, stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT, universal_newlines=True)
             message = output.stdout.read()
+            output.stdout.close()
             if 'Usage: "bwfmetaedit' in message:
                 bwfmetaedit = True
         except FileNotFoundError:
             pass
-            
+
     # This script does not ensure non-Mac computers have FFMPEG and bwfmetaedit installed.
     else:
         ffmpeg, bwfmetaedit = True, True
