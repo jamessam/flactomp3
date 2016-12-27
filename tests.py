@@ -1,6 +1,10 @@
-from unittest import main, TestCase
-from tomp3 import test_apps_there, validate_path
+import os
+import subprocess
 from platform import system
+from unittest import main, TestCase
+
+from tomp3 import test_apps_there, validate_path
+
 
 class SystemTests(TestCase):
     def test_system_for_apps(self):
@@ -25,23 +29,39 @@ class UnitTests(TestCase):
         else:
             os.mkdir(self.testing_path)
 
+        command = ['ffmpeg', '-f', 'lavfi', '-i' ,'sine=frequency=1000:duration=5']
         if not os.path.exists(self.throwaway):
             throw = open(self.throwaway, 'w')
             throw.write('Test file. Please delete this file if you find it.')
             throw.close()
         if not os.path.exists(self.mp3c):
-            pass
+            command.append(self.mp3c)
+            subprocess.call(command)
+            del command[5]
         if not os.path.exists(self.mp3d):
-            pass
+            command.append(self.mp3d)
+            subprocess.call(command)
+            del command[5]
         if not os.path.exists(self.wav1):
-            pass
+            command.append(self.wav1)
+            subprocess.call(command)
+            del command[5]
         if not os.path.exists(self.wav2):
-            pass
+            command.append(self.wav2)
+            subprocess.call(command)
+            del command[5]
         if not os.path.exists(self.flac):
-            pass
+            command.append(self.flac)
+            subprocess.call(command)
+            del command[5]
 
     def tearDown(self):
         os.remove(self.throwaway)
+        os.remove(self.mp3c)
+        os.remove(self.mp3d)
+        os.remove(self.wav1)
+        os.remove(self.wav2)
+        os.remove(self.flac)
 
         if not self.folder_exists:
             os.rmdir(self.testing_path)
