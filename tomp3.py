@@ -14,6 +14,7 @@ from platform import system
 import os
 import re
 import subprocess
+import sys
 
 valid_extensions = ['flac','wav']
 
@@ -98,7 +99,45 @@ def get_paths():
             print('\r\nAt least one of those paths was invalid. Please try again.\r\n')
     return hi_res_path, lo_res_path
 
+def test_apps_there():
+    ffmpeg, bwfmetaedit = False, False
+
+    # Ensure FFMPEG and bwfmetaedit for Mac computers
+    if system() == 'Darwin':
+        f_command = ['ffmpeg', '-h']
+        b_command = ['bwfmetaedit']
+
+        # Look for FFMPEG
+        try:
+            output = subprocess.Popen(f_command, stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT, universal_newlines=True)
+            message = output.stdout.read()
+            if 'ffmpeg version' in message:
+                ffmpeg = True
+        except FileNotFoundError:
+            pass
+
+        # Look for bwfmetaedit
+        try:
+            output = subprocess.Popen(b_command, stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT, universal_newlines=True)
+            message = output.stdout.read()
+            if 'Usage: "bwfmetaedit' in message:
+                bwfmetaedit = True
+        except FileNotFoundError:
+            pass
+            
+    # This script does not ensure non-Mac computers have FFMPEG and bwfmetaedit installed.
+    else:
+        ffmpeg, bwfmetaedit = True, True
+
+    return ffmpeg, bwfmetaedit
+
 def main():
+    ffmpeg, bwfmetaedit = test_apps_there()
+    if not ffmpeg or not bwfmetaedit:
+        sys.exit('Please make sure ffmpeg and bwfmetaedit (cli version) are installed.\r\n')
+
     hi_res_path, lo_res_path = get_paths()
     extension = get_extension()
     file_list = make_file_list(hi_res_path, extension)
