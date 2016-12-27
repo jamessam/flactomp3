@@ -3,7 +3,7 @@ import subprocess
 from platform import system
 from unittest import main, TestCase
 
-from tomp3 import test_apps_there, validate_path
+from tomp3 import make_file_list, test_apps_there, validate_path
 
 
 class SystemTests(TestCase):
@@ -80,6 +80,12 @@ class UnitTests(TestCase):
         self.assertFalse(validate_path(path2))
 
     def test_file_list(self):
-        pass
+        file_list = make_file_list(self.testing_path, 'wav')
+        should = ['1', '2']
+        self.assertEqual(file_list, should)
+
+        file_list = make_file_list(self.testing_path, 'flac')
+        should = ['yo']
+        self.assertEqual(file_list, should)
 
 main()
