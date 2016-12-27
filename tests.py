@@ -12,7 +12,7 @@ class SystemTests(TestCase):
         self.assertTrue(f)
         self.assertTrue(b)
 
-class UnitTests(TestCase):
+class UnitTestsForFunctions(TestCase):
     folder_exists = False
     testing_path = 'testing'
 
