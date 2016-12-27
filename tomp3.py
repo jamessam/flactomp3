@@ -10,17 +10,17 @@
 
 from linecache import getline
 from platform import system
-from subprocess import call
 
 import os
 import re
+import subprocess
 
 valid_extensions = ['flac','wav']
 
 def check_channels(f, hi_res_path):
     csv_file = hi_res_path+f+'_tech.csv'
     command = ['bwfmetaedit','--out-tech='+csv_file,hi_res_path+f+'.wav']
-    call(command)
+    subprocess.call(command)
 
     line2 = getline(csv_file,2)
     line2 = line2.split(',')
@@ -107,7 +107,7 @@ def main():
         gimmespace()
         print("Making mp3 for: " + f)
         command = make_command(hi_res_path, lo_res_path, f.strip(), extension.strip())
-        call(command)
+        subprocess.call(command)
 
     gimmespace()
 
