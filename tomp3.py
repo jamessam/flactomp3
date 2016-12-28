@@ -18,35 +18,44 @@ import sys
 
 valid_extensions = ['flac','wav']
 
-def check_channels(f, hi_res_path):
-    csv_file = hi_res_path+f+'_tech.csv'
-    command = ['bwfmetaedit','--out-tech='+csv_file,hi_res_path+f+'.wav']
-    subprocess.call(command)
+def check_channels(hi_res_path, f, extension):
+    real = str(os.path.join(hi_res_path, f + '.' + extension))
+    new = real.replace('.', '1.')
+    command = ['ffmpeg', '-i', real, new]
+    try:
+        output = subprocess.Popen(command, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, universal_newlines=True)
+        message = output.stdout.read()
+        output.stdout.close()
+        os.remove(new)
+    except:
+        sys.exit('\r\nHey, something went wrong. Sorry about that.\r\n')
 
-    line2 = getline(csv_file,2)
-    line2 = line2.split(',')
-    channels = int(line2[4])
-    os.remove(csv_file)
+    if 'mono' in message:
+        channels = 1
+    else:
+        channels = 2
+
     return channels
 
 def make_command(hi_res_path, lo_res_path, f, extension):
     command = ""
-    channels = check_channels(f, hi_res_path)
+    channels = check_channels(hi_res_path, f, extension)
 
     if channels == 1:
         command = ['ffmpeg','-i',
-                    hi_res_path+f+'.'+extension,
+                    os.path.join(hi_res_path, f + '.' + extension),
                     '-write_id3v1', '1','-id3v2_version','3',
                     '-dither_method','modified_e_weighted',
                     '-out_sample_rate','48k','-b:a','160k',
-                    lo_res_path+f+'.mp3']
+                    os.path.join(lo_res_path, f + '.mp3')]
     if channels == 2:
         command = ['ffmpeg','-i',
-                    hi_res_path+f+'.'+extension,
+                    os.path.join(hi_res_path, f + '.' + extension),
                     '-write_id3v1','1','-id3v2_version','3',
                     '-dither_method','modified_e_weighted',
                     '-out_sample_rate','48k', '-b:a','320k',
-                    lo_res_path+f+'.mp3']
+                    os.path.join(lo_res_path, f + '.mp3')]
     return command
 
 def gimmespace():
