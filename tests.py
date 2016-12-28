@@ -3,7 +3,7 @@ import subprocess
 from platform import system
 from unittest import main, TestCase
 
-from tomp3 import make_file_list, test_apps_there, validate_path
+from tomp3 import check_channels, make_file_list, test_apps_there, validate_path
 
 
 class SystemTests(TestCase):
@@ -65,6 +65,12 @@ class UnitTestsForFunctions(TestCase):
 
         if not self.folder_exists:
             os.rmdir(self.testing_path)
+
+    def test_check_channels(self):
+        flac_channels = check_channels(self.testing_path, 'yo', 'flac')
+        wav_channels = check_channels(self.testing_path, '1', 'wav')
+        self.assertEqual(flac_channels, 1)
+        self.assertEqual(wav_channels, 1)
 
     def test_path_validation(self):
         if system() == "Windows":
