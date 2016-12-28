@@ -3,7 +3,7 @@ import subprocess
 from platform import system
 from unittest import main, TestCase
 
-from tomp3 import check_channels, make_file_list, test_apps_there, validate_path
+from tomp3 import check_channels, make_command, make_file_list, test_apps_there, validate_path
 
 
 class SystemTests(TestCase):
@@ -71,6 +71,20 @@ class UnitTestsForFunctions(TestCase):
         wav_channels = check_channels(self.testing_path, '1', 'wav')
         self.assertEqual(flac_channels, 1)
         self.assertEqual(wav_channels, 1)
+
+    def test_make_command(self):
+        hi_path = 'testing'
+        lo_path = 'testing'
+        f       = '1'
+        ext     = 'wav'
+        expected = ['ffmpeg','-i',
+                    'testing/1.wav',
+                    '-write_id3v1', '1','-id3v2_version','3',
+                    '-dither_method','modified_e_weighted',
+                    '-out_sample_rate','48k','-b:a','160k',
+                    'testing/1.mp3']
+        tested = make_command(hi_path, lo_path, f, ext)
+        self.assertEqual(tested, expected)
 
     def test_path_validation(self):
         if system() == "Windows":
