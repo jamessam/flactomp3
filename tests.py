@@ -8,9 +8,8 @@ from tomp3 import check_channels, make_command, make_file_list, test_apps_there,
 
 class SystemTests(TestCase):
     def test_system_for_apps(self):
-        f, b = test_apps_there()
+        f = test_apps_there()
         self.assertTrue(f)
-        self.assertTrue(b)
 
 class UnitTestsForFunctions(TestCase):
     folder_exists = False
