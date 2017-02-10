@@ -1,12 +1,7 @@
-#
-# ToMP3.py
-# Author: Jim Sam
-#
-# This script turns high resolution files into mp3s.
-#
-# It assumes you have FFMPEG installed on your system in a way that does not
-# require a defined directory to launch.
-#
+'''tomp3.py turns high resolution files into mp3s.
+
+It assumes you have FFMPEG installed on your system and path.
+'''
 
 from linecache import getline
 from platform import system
