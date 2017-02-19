@@ -14,7 +14,7 @@ import sys
 valid_extensions = ['flac','wav']
 
 def check_channels(hi_res_path, f, extension):
-    real = str(os.path.join(hi_res_path, f + '.' + extension))
+    real = os.path.join(hi_res_path, f+'.'+extension)
     new = real.replace('.', '1.')
     command = ['ffmpeg', '-i', real, new]
     try:
