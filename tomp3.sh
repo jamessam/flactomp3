@@ -14,4 +14,5 @@ do
   else
     ffmpeg -i "$i" -write_id3v1 1 -id3v2_version 3 -dither_method modified_e_weighted -out_sample_rate 48k -b:a 320k "$lo_res_path/$f"
   fi
+  rm output.txt
 done
