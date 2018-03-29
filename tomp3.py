@@ -62,7 +62,7 @@ def make_file_list(hi_res_path, extension):
     file_list = []
     l = len(extension)*-1
     for f in dir1:
-        if f[l:] == extension:
+        if f[l:].lower() == extension.lower():
             [file_name, ext] = f.split('.')
             file_list.append(file_name)
     return file_list
