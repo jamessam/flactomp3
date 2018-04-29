@@ -1,14 +1,16 @@
 const fs = require('fs');
+const path = require('path');
+const spawn = require('child_process').spawn;
 
 const hiResPath = process.argv[2];
 const loResPath = process.argv[3];
-const format = process.argv[4];
+const extension = process.argv[4];
 
-const validFormats = ['flac', 'wav'];
+const validExtensions = ['flac', 'wav'];
 
-function InvalidFormat(error) {
+function InvalidExtension(error) {
   this.error = error;
-  this.name = 'InvalidFormat';
+  this.name = 'InvalidExtension';
 }
 
 function PathNotFoundError(error) {
@@ -25,23 +27,57 @@ function checkPath(path, value) {
   return;
 }
 
+function convertFile(f) {
+  // TODO: Find out how many channels are in the file
+
+  let low = f.replace(extension, 'mp3');
+  // This command will change once varying channels are supported.
+  let ffmpegCommandArgs = [
+    '-i',
+    `${path.join(hiResPath, f)}`,
+    '-write_id3v1',
+    '1',
+    '-id3v2_version',
+    '3',
+    '-dither_method',
+    'modified_e_weighted',
+    '-out_sample_rate',
+    '48k',
+    '-b:a',
+    '320k',
+    `${path.join(loResPath, low)}`
+  ];
+
+  const promise = new Promise((resolve, reject) => {
+    const ffmpeg = spawn('ffmpeg', ffmpegCommandArgs);
+    ffmpeg.stderr.on('data', data => {
+      console.log(`${data}`);
+    });
+    ffmpeg.on('close', code => {
+      resolve();
+    });
+  });
+
+  return promise;
+}
+
 function makeFileList(path, extension) {
   let files = new Array();
   const rawList = fs.readdirSync(path);
   rawList.map(f => {
     const tempExtIndex = extension.length;
     let tempFExt = f.substring(f.length - tempExtIndex, f.length);
-    // This needs to be extended to allow for capitalization variance
+    // TODO: This needs to be extended to allow for capitalization variance
     if (tempFExt === extension) {
       files.push(f);
     }
   });
-  return files
+  return files;
 }
 
-function validateFormat(format) {
-  if (validFormats.indexOf(format) === -1) {
-    throw new InvalidFormat(`${format} is not a valid format.`);
+function validateExtension(extension) {
+  if (validExtensions.indexOf(extension) === -1) {
+    throw new InvalidExtension(`${extension} is not a valid format.`);
   }
   return;
 }
@@ -52,15 +88,17 @@ function validateFormat(format) {
 try {
   checkPath(hiResPath, 'high resolution path');
   checkPath(loResPath, 'low resolution path');
-  validateFormat(format);
+  validateExtension(extension);
 } catch (error) {
   console.log(error.error);
   process.exit();
 }
 
 // Synchronously make the file list
-const fileList = makeFileList(hiResPath, format);
+const fileList = makeFileList(hiResPath, extension);
 
-// A synchronolously map through the file list and create mp3s
-// Make the FFMPEG command
-// Excecute the command
+// Map through the file list and create mp3s
+fileList.map(f => {
+  // TODO: check if mp3 already exists
+  convertFile(f);
+});
