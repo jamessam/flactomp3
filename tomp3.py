@@ -59,7 +59,7 @@ def gimmespace():
 
 def make_file_list(hi_res_path, extension):
     l = len(extension)*-1
-    file_list = [f[:l-1] for f in os.listdir(hi_res_path) if f[l:] == extension]
+    file_list = [f[:l-1] for f in os.listdir(hi_res_path) if f[l:].lower() == extension.lower()]
     return file_list
 
 def validate_path(path):
