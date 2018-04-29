@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const spawn = require('child_process').spawn;
+const { spawn } = require('child_process');
 
 const hiResPath = process.argv[2];
 const loResPath = process.argv[3];
@@ -51,6 +51,7 @@ function convertFile(f) {
   const promise = new Promise((resolve, reject) => {
     const ffmpeg = spawn('ffmpeg', ffmpegCommandArgs);
     ffmpeg.stderr.on('data', data => {
+      console.log(`Processing for ${f} failed:`)
       console.log(`${data}`);
     });
     ffmpeg.on('close', code => {
