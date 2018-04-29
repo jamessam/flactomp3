@@ -25,6 +25,20 @@ function checkPath(path, value) {
   return;
 }
 
+function makeFileList(path, extension) {
+  let files = new Array();
+  const rawList = fs.readdirSync(path);
+  rawList.map(f => {
+    const tempExtIndex = extension.length;
+    let tempFExt = f.substring(f.length - tempExtIndex, f.length);
+    // This needs to be extended to allow for capitalization variance
+    if (tempFExt === extension) {
+      files.push(f);
+    }
+  });
+  return files
+}
+
 function validateFormat(format) {
   if (validFormats.indexOf(format) === -1) {
     throw new InvalidFormat(`${format} is not a valid format.`);
@@ -32,9 +46,9 @@ function validateFormat(format) {
   return;
 }
 
-// Validate if FFMPEG is added to the system
+// Synchronously validate if FFMPEG is added to the system
 
-// Validate the paths passed from the cli and the format is valid
+// Synchronously validate the paths passed from the cli and the format is valid
 try {
   checkPath(hiResPath, 'high resolution path');
   checkPath(loResPath, 'low resolution path');
@@ -44,8 +58,9 @@ try {
   process.exit();
 }
 
-// Make the file list
+// Synchronously make the file list
+const fileList = makeFileList(hiResPath, format);
 
-// Cycle the file list and create mp3s
-  // Make the FFMPEG command
-  // Excecute the command
+// A synchronolously map through the file list and create mp3s
+// Make the FFMPEG command
+// Excecute the command
