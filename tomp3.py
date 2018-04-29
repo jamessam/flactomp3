@@ -58,13 +58,8 @@ def gimmespace():
         print()
 
 def make_file_list(hi_res_path, extension):
-    dir1 = os.listdir(hi_res_path)
-    file_list = []
     l = len(extension)*-1
-    for f in dir1:
-        if f[l:] == extension:
-            [file_name, ext] = f.split('.')
-            file_list.append(file_name)
+    file_list = [f[:l-1] for f in os.listdir(hi_res_path) if f[l:] == extension]
     return file_list
 
 def validate_path(path):
