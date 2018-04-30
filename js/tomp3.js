@@ -1,6 +1,8 @@
 const fs = require('fs');
+const mm = require('music-metadata');
 const path = require('path');
 const { spawn } = require('child_process');
+const util = require('util');
 
 const hiResPath = process.argv[2];
 const loResPath = process.argv[3];
@@ -28,10 +30,8 @@ function checkPath(path, value) {
 }
 
 function convertFile(f) {
-  // TODO: Find out how many channels are in the file
-
   let low = f.toLowerCase().replace(extension.toLowerCase(), 'mp3');
-  // This command will change once varying channels are supported.
+
   let ffmpegCommandArgs = [
     '-i',
     `${path.join(hiResPath, f)}`,
@@ -48,17 +48,36 @@ function convertFile(f) {
     `${path.join(loResPath, low)}`
   ];
 
-  const promise = new Promise((resolve, reject) => {
-    const ffmpeg = spawn('ffmpeg', ffmpegCommandArgs);
-    ffmpeg.stderr.on('data', data => {
-      console.log(`${data}`);
+  getChannels(`${path.join(hiResPath, f)}`)
+    .then(channels => {
+      if (channels === 1) {
+        ffmpegCommandArgs[11] = '160k';
+      }
+    })
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        const ffmpeg = spawn('ffmpeg', ffmpegCommandArgs);
+        ffmpeg.stderr.on('data', data => {
+          console.log(`${data}`);
+        });
+        ffmpeg.on('close', code => {
+          resolve();
+        });
+      });
     });
-    ffmpeg.on('close', code => {
-      resolve();
-    });
-  });
+}
 
-  return promise;
+function getChannels(f) {
+  return new Promise((resolve, reject) => {
+    let mm_data = mm
+      .parseFile(f)
+      .then(metadata => {
+        resolve(metadata.format.numberOfChannels);
+      })
+      .catch(err => {
+        console.error("there's an error", err.message);
+      });
+  });
 }
 
 function makeFileList(path, extension) {
@@ -98,7 +117,10 @@ const fileList = makeFileList(hiResPath, extension);
 
 // Map through the file list and create mp3s
 fileList.map(f => {
-  let low = path.join(loResPath, f).toLowerCase().replace(extension.toLowerCase(), 'mp3');
+  let low = path
+    .join(loResPath, f)
+    .toLowerCase()
+    .replace(extension.toLowerCase(), 'mp3');
   if (!fs.existsSync(low)) {
     convertFile(f);
   }
