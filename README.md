@@ -1,5 +1,5 @@
-This is a python3 script to convert a directory of FLAC or WAV files to MP3. It can be extended to accept any audio format, should you choose to extend it.
+These are scripts for converting a directory of FLAC or WAV files to MP3. They can be extended to accept any audio format, should you choose to extend it.
 
-This script does not require any module beyond the standard library, though it does require FFMPEG to be installed. It automatically checks for FFMPEG on Macs, but assumes FFMPEG is installed and added to the system path on other OS's.
+The scripts require FFMPEG to be installed. The Python script automatically checks for FFMPEG on Macs, but assumes FFMPEG is installed and added to the system path on other OS's. The JavaScript and BASH do not currently check for FFMPEG.
 
-There is also a BASH version of this script, though it is not as robust.
+For Python, it can be called as simply ```python tomp3.py```. The JS and BASH scripts need to be called as ```node /path/to/hi/res/files /path/to/mp3s wav```.
