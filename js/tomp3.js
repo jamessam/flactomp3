@@ -30,7 +30,7 @@ function checkPath(path, value) {
 function convertFile(f) {
   // TODO: Find out how many channels are in the file
 
-  let low = f.replace(extension, 'mp3');
+  let low = f.toLowerCase().replace(extension.toLowerCase(), 'mp3');
   // This command will change once varying channels are supported.
   let ffmpegCommandArgs = [
     '-i',
@@ -51,7 +51,6 @@ function convertFile(f) {
   const promise = new Promise((resolve, reject) => {
     const ffmpeg = spawn('ffmpeg', ffmpegCommandArgs);
     ffmpeg.stderr.on('data', data => {
-      console.log(`Processing for ${f} failed:`)
       console.log(`${data}`);
     });
     ffmpeg.on('close', code => {
@@ -68,8 +67,7 @@ function makeFileList(path, extension) {
   rawList.map(f => {
     const tempExtIndex = extension.length;
     let tempFExt = f.substring(f.length - tempExtIndex, f.length);
-    // TODO: This needs to be extended to allow for capitalization variance
-    if (tempFExt === extension) {
+    if (tempFExt.toLowerCase() === extension.toLowerCase()) {
       files.push(f);
     }
   });
@@ -100,6 +98,8 @@ const fileList = makeFileList(hiResPath, extension);
 
 // Map through the file list and create mp3s
 fileList.map(f => {
-  // TODO: check if mp3 already exists
-  convertFile(f);
+  let low = path.join(loResPath, f).toLowerCase().replace(extension.toLowerCase(), 'mp3');
+  if (!fs.existsSync(low)) {
+    convertFile(f);
+  }
 });
