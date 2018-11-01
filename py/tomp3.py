@@ -10,7 +10,8 @@ VALID_EXTENSIONS = ['flac','wav']
 
 def main():
     proceed_if_dependencies_there()
-    high_res_path, low_res_path = get_valid_high_and_low_resolution_paths()
+    high_res_path = get_valid_path('high')
+    low_res_path = get_valid_path('low')
     extension = get_extension()
     file_list = make_file_list(high_res_path, extension)
     make_mp3s(high_res_path, low_res_path, file_list, extension)
@@ -29,12 +30,6 @@ def call_subprocess(command):
     except Exception as error:
         raise error.with_traceback(sys.exc_info()[2])
     return message
-
-
-def get_valid_high_and_low_resolution_paths():
-    high_res_path = get_valid_path('high')
-    low_res_path = get_valid_path('low')
-    return high_res_path, low_res_path
 
 
 def get_valid_path(resolution):
