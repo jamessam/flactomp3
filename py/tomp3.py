@@ -8,27 +8,6 @@ import sys
 VALID_EXTENSIONS = ['flac','wav']
 
 
-class MasterFile:
-    high_res_path = None
-    low_res_path = None
-    file_name = None
-    extension = None
-
-    def full_high_res_name(self):
-        return os.path.join(self.high_res_path, self.file_name)
-    
-    def full_low_res_name(self):
-        return os.path.join(self.low_res_path, 
-            self.file_name.replace(self.extension, 'mp3'))
-
-    def __init__(self, high_res_path=None, low_res_path=None, 
-        file_name=None, extension=None):
-        self.high_res_path = high_res_path.strip()
-        self.low_res_path = low_res_path.strip()
-        self.file_name = file_name.strip()
-        self.extension = extension.strip()
-
-
 def main():
     proceed_if_dependencies_there()
     high_res_path = get_valid_path('high')
@@ -98,27 +77,33 @@ def make_file_list(high_res_path, low_res_path, extension):
     for f in os.listdir(high_res_path):
         if not f.endswith(extension):
             continue
-        master_file = MasterFile(high_res_path=high_res_path, 
-            low_res_path=low_res_path, file_name=f, extension=extension)
+        master_file = {
+            'high_res_path': high_res_path, 'low_res_path': low_res_path,
+            'file_name': f, 'extension': extension,
+            'full_high_res_name': os.path.join(high_res_path, f),
+            'full_low_res_name': os.path.join(
+                low_res_path, f.replace(extension, 'mp3')
+            )
+        }
         file_list.append(master_file)
-    file_list.sort(key = lambda x: x.file_name)
+    file_list.sort(key = lambda x: x['file_name'])
     return file_list
 
 
 def make_mp3s(file_list):
     for master_file in file_list:
-        print("Making mp3 for: " + master_file.file_name)
+        print("Making mp3 for: " + master_file['file_name'])
         command = make_command(master_file)
         call_subprocess(command)
 
 
 def make_command(master_file):
-    command = ['ffmpeg', '-i', master_file.full_high_res_name(), 
+    command = ['ffmpeg', '-i', master_file['full_high_res_name'], 
         '-write_id3v1', '1','-id3v2_version', '3',
         '-dither_method','modified_e_weighted', 
         '-out_sample_rate','48k', '-b:a','320k', 
-        master_file.full_low_res_name()]
-    channels = check_channels(master_file.full_high_res_name())
+        master_file['full_low_res_name']]
+    channels = check_channels(master_file['full_high_res_name'])
     if channels == 1: 
         command[12]='160k'
     return command
