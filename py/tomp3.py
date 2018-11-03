@@ -8,12 +8,33 @@ import sys
 VALID_EXTENSIONS = ['flac','wav']
 
 
+class MasterFile:
+    high_res_path = None
+    low_res_path = None
+    file_name = None
+    extension = None
+
+    def full_high_res_name(self):
+        return os.path.join(self.high_res_path, self.file_name)
+    
+    def full_low_res_name(self):
+        return os.path.join(self.low_res_path, 
+            self.file_name.replace(self.extension, 'mp3'))
+
+    def __init__(self, high_res_path=None, low_res_path=None, 
+        file_name=None, extension=None):
+        self.high_res_path = high_res_path
+        self.low_res_path = low_res_path
+        self.file_name = file_name
+        self.extension = extension
+
+
 def main():
     proceed_if_dependencies_there()
     high_res_path = get_valid_path('high')
     low_res_path = get_valid_path('low')
     extension = get_extension()
-    file_list = make_file_list(high_res_path, extension)
+    file_list = make_file_list(high_res_path, low_res_path, extension)
     make_mp3s(high_res_path, low_res_path, file_list, extension)
 
 
@@ -71,10 +92,16 @@ def get_extension():
     return extension
 
 
-def make_file_list(hi_res_path, extension):
-    files_in_dir = os.listdir(hi_res_path)
-    file_list = [f for f in os.listdir(hi_res_path) if f.endswith(extension)]
-    file_list.sort()
+def make_file_list(high_res_path, low_res_path, extension):
+    files_in_dir = os.listdir(high_res_path)
+    file_list = []
+    for f in os.listdir(high_res_path):
+        if not f.endswith(extension):
+            continue
+        master_file = MasterFile(high_res_path=high_res_path, 
+            low_res_path=low_res_path, file_name=f, extension=extension)
+        file_list.append(master_file)
+    file_list.sort(key = lambda x: x.file_name)
     return file_list
 
 
@@ -86,15 +113,13 @@ def make_mp3s(high_res_path, low_res_path, file_list, extension):
         call_subprocess(command)
 
 
-def make_command(high_res_path, low_res_path, master_file, extension):
-    mp3_file = master_file.replace(extension, 'mp3')
-    full_master = os.path.join(high_res_path, master_file)
-    full_mp3 = os.path.join(low_res_path, mp3_file)
-    command = ['ffmpeg', '-i', full_master, 
+def make_command(master_file):
+    command = ['ffmpeg', '-i', master_file.full_high_res_name(), 
         '-write_id3v1', '1','-id3v2_version', '3',
         '-dither_method','modified_e_weighted', 
-        '-out_sample_rate','48k', '-b:a','320k', full_mp3]
-    channels = check_channels(full_master)
+        '-out_sample_rate','48k', '-b:a','320k', 
+        master_file.full_low_res_name()]
+    channels = check_channels(master_file.full_high_res_name())
     if channels == 1: 
         command[12]='160k'
     return command

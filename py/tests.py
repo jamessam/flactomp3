@@ -1,12 +1,11 @@
 import os
 from platform import system
-# from subprocess import run
 from unittest import main, TestCase
 from unittest.mock import patch
 
 from tomp3 import (
     call_subprocess, check_channels, get_extension, get_valid_path, 
-    make_command, make_file_list, validate_path
+    make_command, make_file_list, validate_path, MasterFile
 )
 
 
@@ -15,6 +14,27 @@ def create_sound_file_if_not_there(file):
     if not os.path.exists(file):
         command.append(file)
         call_subprocess(command)
+
+
+class UnitTestsForClasses(TestCase):
+    def test_master_file_basic(self):
+        mf = MasterFile(
+            high_res_path='/wavs/', low_res_path='/mp3s/',
+            file_name='test.wav', extension='wav'
+        )
+        self.assertEqual('/wavs/', mf.high_res_path)
+        self.assertEqual('/mp3s/', mf.low_res_path)
+        self.assertEqual('test.wav', mf.file_name)
+        self.assertEqual('wav', mf.extension)
+        self.assertEqual('/wavs/test.wav', mf.full_high_res_name())
+        self.assertEqual('/mp3s/test.mp3', mf.full_low_res_name())
+    
+    def test_breaking_master_file(self):
+        with self.assertRaises(TypeError):
+            mf = MasterFile(
+                high_res_path='/wavs/', low_res_path='/mp3s/',
+                file_name='test.wav', extension='wav', hi_there='yo'
+            )
 
 
 class UnitTestsForFunctions(TestCase):
@@ -48,12 +68,19 @@ class UnitTestsForFunctions(TestCase):
         self.assertFalse(validate_path(path2))
     
     def test_make_file_list(self):
-        file_list = make_file_list(os.getcwd(), 'py')
-        self.assertEqual(['tests.py', 'tomp3.py'], file_list)
-        file_list = make_file_list(os.getcwd(), 'mp3')
+        file_list = make_file_list(os.getcwd(), None, 'mp3')
         self.assertEqual([], file_list)
-        file_list = make_file_list(os.getcwd(), 'md')
+        file_list = make_file_list(os.getcwd(), None, 'md')
         self.assertEqual([], file_list)
+        mf1 = MasterFile(high_res_path=os.getcwd(), low_res_path=None,
+            file_name='tests.py', extension='py')
+        mf2 = MasterFile(high_res_path=os.getcwd(), low_res_path=None,
+            file_name='tomp3.py', extension='py')
+        file_list = make_file_list(os.getcwd(), None, 'py')
+        self.assertEqual(mf1.extension, 'py')
+        self.assertEqual(mf1.file_name, file_list[0].file_name)
+        self.assertEqual(mf2.extension, 'py')
+        self.assertEqual(mf2.file_name, file_list[1].file_name)
 
 
 class UnitTestsForFunctionsWhereSoundFileIsRequired(TestCase):
@@ -102,11 +129,13 @@ class UnitTestsForFunctionsWhereSoundFileIsRequired(TestCase):
         self.assertEqual(wav_channels, 1)
 
     def test_make_command(self):
+        master_file = MasterFile(high_res_path='testing', 
+            low_res_path='testing', file_name='1.wav', extension='wav')
         expected = ['ffmpeg','-i', 'testing/1.wav',
                     '-write_id3v1', '1','-id3v2_version','3',
                     '-dither_method','modified_e_weighted',
                     '-out_sample_rate','48k','-b:a','160k', 'testing/1.mp3']
-        tested = make_command('testing', 'testing', '1.wav', 'wav')
+        tested = make_command(master_file)
         self.assertEqual(expected, tested)
 
 
