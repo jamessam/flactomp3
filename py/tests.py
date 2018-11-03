@@ -68,15 +68,15 @@ class UnitTestsForFunctions(TestCase):
         self.assertFalse(validate_path(path2))
     
     def test_make_file_list(self):
-        file_list = make_file_list(os.getcwd(), None, 'mp3')
+        file_list = make_file_list(os.getcwd(), 'testing', 'mp3')
         self.assertEqual([], file_list)
-        file_list = make_file_list(os.getcwd(), None, 'md')
+        file_list = make_file_list(os.getcwd(), 'testing', 'md')
         self.assertEqual([], file_list)
-        mf1 = MasterFile(high_res_path=os.getcwd(), low_res_path=None,
+        mf1 = MasterFile(high_res_path=os.getcwd(), low_res_path='testing',
             file_name='tests.py', extension='py')
-        mf2 = MasterFile(high_res_path=os.getcwd(), low_res_path=None,
+        mf2 = MasterFile(high_res_path=os.getcwd(), low_res_path='testing',
             file_name='tomp3.py', extension='py')
-        file_list = make_file_list(os.getcwd(), None, 'py')
+        file_list = make_file_list(os.getcwd(), 'testing', 'py')
         self.assertEqual(mf1.extension, 'py')
         self.assertEqual(mf1.file_name, file_list[0].file_name)
         self.assertEqual(mf2.extension, 'py')

@@ -23,10 +23,10 @@ class MasterFile:
 
     def __init__(self, high_res_path=None, low_res_path=None, 
         file_name=None, extension=None):
-        self.high_res_path = high_res_path
-        self.low_res_path = low_res_path
-        self.file_name = file_name
-        self.extension = extension
+        self.high_res_path = high_res_path.strip()
+        self.low_res_path = low_res_path.strip()
+        self.file_name = file_name.strip()
+        self.extension = extension.strip()
 
 
 def main():
@@ -106,10 +106,9 @@ def make_file_list(high_res_path, low_res_path, extension):
 
 
 def make_mp3s(high_res_path, low_res_path, file_list, extension):
-    for f in file_list:
-        print("Making mp3 for: " + f)
-        command = make_command(high_res_path, low_res_path, f.strip(), 
-            extension.strip())
+    for master_file in file_list:
+        print("Making mp3 for: " + master_file.file_name)
+        command = make_command(master_file)
         call_subprocess(command)
 
 
