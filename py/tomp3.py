@@ -35,7 +35,7 @@ def main():
     low_res_path = get_valid_path('low')
     extension = get_extension()
     file_list = make_file_list(high_res_path, low_res_path, extension)
-    make_mp3s(high_res_path, low_res_path, file_list, extension)
+    make_mp3s(file_list)
 
 
 def proceed_if_dependencies_there():
@@ -105,7 +105,7 @@ def make_file_list(high_res_path, low_res_path, extension):
     return file_list
 
 
-def make_mp3s(high_res_path, low_res_path, file_list, extension):
+def make_mp3s(file_list):
     for master_file in file_list:
         print("Making mp3 for: " + master_file.file_name)
         command = make_command(master_file)
